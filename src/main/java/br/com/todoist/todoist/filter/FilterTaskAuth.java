@@ -30,7 +30,7 @@ public class FilterTaskAuth extends OncePerRequestFilter{
         
         var servletPath = request.getServletPath();
 
-        if(servletPath.equals("/tasks/")) {
+        if(servletPath.startsWith("/tasks/")) {
             // Pegar email e senha
             var authorization = request.getHeader("Authorization"); // Retorna uma string encriptada no formato Basic [código]
             var authEncoded = authorization.substring("Basic".length()).trim(); // Remove o Basic da string e retira os espaços, sobrando apenas o código
