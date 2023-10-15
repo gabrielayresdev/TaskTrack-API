@@ -3,6 +3,7 @@ package br.com.todoist.todoist.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ public class UserController {
     private IUserRepository userRepository;
 
     @PostMapping("/")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity create(@RequestBody UserModel userModel) {
         var user = this.userRepository.findByEmail(userModel.getEmail());
         if(user != null) {
