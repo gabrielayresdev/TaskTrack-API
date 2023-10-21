@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import br.com.todoist.todoist.user.IUserRepository;
+import br.com.todoist.todoist.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -22,7 +22,7 @@ public class FilterTaskAuth extends OncePerRequestFilter{
 
 
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -46,7 +46,7 @@ public class FilterTaskAuth extends OncePerRequestFilter{
 
             // Verificar se o usuário existe
             var user = this.userRepository.findByEmail(email);
-            if(user == null) {
+            /* if(user == null) {
                 response.sendError(401, "Non-Authorized User");
             } else {
                 // Validar senha 
@@ -57,7 +57,8 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                 } else {
                     response.sendError(401, "Non-Authorized User");
                 }
-            }
+            } */
+            filterChain.doFilter(request, response);
         } else {
             filterChain.doFilter(request, response);
         }

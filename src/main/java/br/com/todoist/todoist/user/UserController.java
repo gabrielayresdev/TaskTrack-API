@@ -16,7 +16,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 public class UserController {
      
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
     @PostMapping("/")
     @CrossOrigin(origins = "http://localhost:3000")
