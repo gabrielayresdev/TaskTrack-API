@@ -24,15 +24,15 @@ public class UserModel implements UserDetails {
     private UUID id;
 
     @Column(unique = true)
-    private String email;
+    private String username;
     private String name; 
     private String password;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public UserModel(String email, String name, String password) {
-        this.email = email;
+    public UserModel(String userName, String name, String password) {
+        this.username = userName;
         this.name = name;
         this.password = password;
     }
@@ -44,7 +44,7 @@ public class UserModel implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

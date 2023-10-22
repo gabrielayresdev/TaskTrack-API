@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import br.com.todoist.todoist.user.UserRepository;
 
 @Service
-public class AuthorizationService implements UserDetailsService{
-
+public class AuthorizationService implements UserDetailsService {
     @Autowired
-    UserRepository repository;
+    private UserRepository repository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repository.findByEmail(username);
+        UserDetails user = this.repository.findByUsername(username);
+        if(user == null) throw new UsernameNotFoundException("Username not found");
+        return user;
     }
-    
 }
