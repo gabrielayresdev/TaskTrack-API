@@ -31,6 +31,12 @@ public class UserModel implements UserDetails {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    public UserModel(String email, String name, String password) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
