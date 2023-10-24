@@ -22,10 +22,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity(name="tb_users")
 public class UserModel implements UserDetails {
 
-    public UserModel(String username, String name, String password) {
+    public UserModel(String username, String name, String password, UserRoles role) {
         this.username = username;
         this.name = name;
         this.password = password;
+        this.role = role;
     }
 
 
@@ -37,12 +38,16 @@ public class UserModel implements UserDetails {
     private String username;
     private String name;
     private String password;
+    private UserRoles role;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        if(this.role == UserRoles.ADMIN) return List.of(new SimpleGrantedAuthority("ADMIN"),new SimpleGrantedAuthority("ROLE_USER"));
+        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
     @Override
     public boolean isAccountNonExpired() {

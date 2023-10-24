@@ -34,6 +34,19 @@ public class TokenService {
         }
     }
 
+    public String validateToken(String token) {
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        try {
+            return JWT.require(algorithm)
+                    .withIssuer("auth-api")
+                    .build()
+                    .verify(token)
+                    .getSubject();
+        } catch(JWTVerificationException jwtVerificationException) {
+            return "Token JWT inválido ou expirado!";
+        }
+    }
+
     /*
     public String getSubject(String tokenJWT) {
         try {

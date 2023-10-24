@@ -33,7 +33,7 @@ public class AuthorizationController {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
-        UserModel newUser = new UserModel(data.getUsername(), data.getName(), encryptedPassword);
+        UserModel newUser = new UserModel(data.getUsername(), data.getName(), encryptedPassword, data.getRole());
         System.out.println(newUser);
 
         var userCreated = this.repository.save(newUser);
