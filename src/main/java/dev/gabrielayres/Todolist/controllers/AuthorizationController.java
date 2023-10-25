@@ -34,7 +34,6 @@ public class AuthorizationController {
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
         UserModel newUser = new UserModel(data.getUsername(), data.getName(), encryptedPassword, data.getRole());
-        System.out.println(newUser);
 
         var userCreated = this.repository.save(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
@@ -50,12 +49,4 @@ public class AuthorizationController {
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
     }
-
-    /*s
-    @GetMapping("/search")
-    public ResponseEntity search(@RequestBody UserModel data) {
-        UserModel user = this.repository.findByUsername(data.getUsername());
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(user);
-    }
-    */
 }

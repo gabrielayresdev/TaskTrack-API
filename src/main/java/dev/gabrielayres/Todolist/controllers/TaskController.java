@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -17,18 +18,20 @@ public class TaskController {
     @Autowired
     private TaskRepository repository;
 
-    @PostMapping("/tasks")
+    @PostMapping("/create")
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
 
 
+        UUID userId = (UUID) request.getAttribute("userId");
+        taskModel.setUserId(userId);
 
-        //taskModel.setUserId((UUID) request.getAttribute("userId"));
 
         System.out.println("================================");
         System.out.println("Modelo de tarefas: " + taskModel);
         System.out.println("================================");
 
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("");
+        repository.save(taskModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskModel);
     }
 }

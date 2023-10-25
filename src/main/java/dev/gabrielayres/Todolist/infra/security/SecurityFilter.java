@@ -29,8 +29,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var servletPath = request.getServletPath();
 
-        if (!servletPath.startsWith("/auth/register") && !servletPath.startsWith("/auth/login") && !servletPath.startsWith("/h2-console")) {
-            System.out.println("==================>");
+        if (servletPath.startsWith("/task")) {
 
             var token = this.recoverToken(request);
 
@@ -45,15 +44,16 @@ public class SecurityFilter extends OncePerRequestFilter {
                 System.out.println(authentication);
 
 
-                //UserModel userAttributes = (UserModel) user;
-                //request.setAttribute("userId", userAttributes.getId());
+                // Sets in request the user who made the request
+                UserModel userAttributes = (UserModel) user;
+                request.setAttribute("userId", userAttributes.getId());
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }
 
             filterChain.doFilter(request, response);
         } else {
-            System.out.println("!=================>");
             filterChain.doFilter(request, response);
         }
     }
