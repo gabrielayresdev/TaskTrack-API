@@ -34,4 +34,11 @@ public class TaskController {
         repository.save(taskModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskModel);
     }
+
+    @GetMapping("/list")
+    public ResponseEntity list(HttpServletRequest request) {
+        UUID userId = (UUID) request.getAttribute("userId");
+        List<TaskModel> tasks = repository.findByUserId(userId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(tasks);
+    }
 }
