@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+//@CrossOrigin
 @RequestMapping("auth")
 public class AuthorizationController {
     @Autowired
@@ -48,5 +49,10 @@ public class AuthorizationController {
 
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity test(){
+        return ResponseEntity.ok().build();
     }
 }
