@@ -1,4 +1,4 @@
-package dev.gabrielayres.Todolist.config;
+package dev.gabrielayres.Todolist.infra.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
