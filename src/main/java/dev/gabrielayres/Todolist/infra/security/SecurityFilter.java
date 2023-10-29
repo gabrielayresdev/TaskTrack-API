@@ -27,35 +27,28 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var servletPath = request.getServletPath();
-
-        if (servletPath.startsWith("/task")) {
-
-            var token = this.recoverToken(request);
+        var token = this.recoverToken(request);
 
 
-            if(token != null) {
-                var username = tokenService.validateToken(token);
-                System.out.println(username);
-                UserDetails user = repository.findByUsername(username);
-                System.out.println(user);
+        if(token != null) {
+            var username = tokenService.validateToken(token);
+            System.out.println(username);
+            UserDetails user = repository.findByUsername(username);
+            System.out.println(user);
 
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                System.out.println(authentication);
+            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            System.out.println(authentication);
 
 
-                // Sets in request the user who made the request
-                UserModel userAttributes = (UserModel) user;
-                request.setAttribute("userId", userAttributes.getId());
+            // Sets in request the user who made the request
+            UserModel userAttributes = (UserModel) user;
+            request.setAttribute("userId", userAttributes.getId());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            }
-
-            filterChain.doFilter(request, response);
-        } else {
-            filterChain.doFilter(request, response);
         }
+
+        filterChain.doFilter(request, response);
     }
 
     private String recoverToken(HttpServletRequest request) {
