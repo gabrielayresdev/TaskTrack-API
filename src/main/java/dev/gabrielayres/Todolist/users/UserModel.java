@@ -22,10 +22,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity(name="tb_users")
 public class UserModel implements UserDetails {
 
-    public UserModel(String username, String name, String password, UserRoles role) {
+    public UserModel(String username, String name, String password, String telephone, List<String> groups , UserRoles role) {
         this.username = username;
         this.name = name;
         this.password = password;
+        String stringTel = telephone.replaceAll("\\D", "");
+        try {
+            long longTel = Long.parseLong((stringTel));
+            this.telephone = longTel;
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid input string");
+        }
+        this.groups = groups;
         this.role = role;
     }
 
@@ -38,7 +46,9 @@ public class UserModel implements UserDetails {
     private String username;
     private String name;
     private String password;
+    private long telephone;
     private UserRoles role;
+    private List<String> groups;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

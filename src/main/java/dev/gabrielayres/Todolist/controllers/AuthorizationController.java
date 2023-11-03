@@ -1,10 +1,7 @@
 package dev.gabrielayres.Todolist.controllers;
 
 import dev.gabrielayres.Todolist.infra.security.TokenService;
-import dev.gabrielayres.Todolist.users.AuthenticationDTO;
-import dev.gabrielayres.Todolist.users.LoginResponseDTO;
-import dev.gabrielayres.Todolist.users.UserModel;
-import dev.gabrielayres.Todolist.users.UserRepository;
+import dev.gabrielayres.Todolist.users.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,14 +24,14 @@ public class AuthorizationController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity create(@RequestBody UserModel data) {
-        if(this.repository.findByUsername(data.getUsername()) != null) {
+    public ResponseEntity create(@RequestBody RegisterDTO data) {
+        if(this.repository.findByUsername(data.name()) != null) {
             System.out.println("Email already in use");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already in use!");
         }
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
-        UserModel newUser = new UserModel(data.getUsername(), data.getName(), encryptedPassword, data.getRole());
+        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
+        UserModel newUser = new UserModel(data.username(), data.name(), encryptedPassword, data.telephone(), data.groups(), data.role());
 
         var userCreated = this.repository.save(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
@@ -43,6 +40,7 @@ public class AuthorizationController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
+        System.out.println(usernamePassword);
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
         var token = tokenService.generateToken((UserModel) auth.getPrincipal());
