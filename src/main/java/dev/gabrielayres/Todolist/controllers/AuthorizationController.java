@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,7 @@ public class AuthorizationController {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
+
         UserModel newUser = new UserModel(data.username(), data.name(), encryptedPassword, data.telephone(), data.groups(), data.role());
 
         var userCreated = this.repository.save(newUser);
@@ -39,14 +42,23 @@ public class AuthorizationController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
+        System.out.println(data.password());
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
         System.out.println(usernamePassword);
-        var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((UserModel) auth.getPrincipal());
+        try {
+            var auth  = this.authenticationManager.authenticate(usernamePassword);
+            System.out.println(auth);
+            var token = tokenService.generateToken((UserModel) auth.getPrincipal());
+            System.out.println(token);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+        } catch (AuthenticationException err) {
+            System.out.println(err);
+        }
 
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não consegui");
     }
 
     @GetMapping("/test")
