@@ -42,23 +42,12 @@ public class AuthorizationController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
-        System.out.println(data.password());
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
-        System.out.println(usernamePassword);
 
-        try {
-            var auth  = this.authenticationManager.authenticate(usernamePassword);
-            System.out.println(auth);
-            var token = tokenService.generateToken((UserModel) auth.getPrincipal());
-            System.out.println(token);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
-        } catch (AuthenticationException err) {
-            System.out.println(err);
-        }
+        var auth  = this.authenticationManager.authenticate(usernamePassword);
+        var token = tokenService.generateToken((UserModel) auth.getPrincipal());
 
-
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não consegui");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
     }
 
     @GetMapping("/test")
