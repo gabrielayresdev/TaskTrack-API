@@ -44,6 +44,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             // Sets in request the user who made the request
             UserModel userAttributes = (UserModel) user;
             request.setAttribute("userId", userAttributes.getId());
+            request.setAttribute("userData", userAttributes);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 

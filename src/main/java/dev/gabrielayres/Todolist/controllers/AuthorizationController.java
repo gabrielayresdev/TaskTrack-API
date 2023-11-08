@@ -2,7 +2,9 @@ package dev.gabrielayres.Todolist.controllers;
 
 import dev.gabrielayres.Todolist.infra.security.TokenService;
 import dev.gabrielayres.Todolist.users.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 //@CrossOrigin
@@ -45,13 +51,36 @@ public class AuthorizationController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
 
         var auth  = this.authenticationManager.authenticate(usernamePassword);
-        var token = tokenService.generateToken((UserModel) auth.getPrincipal());
+        UserModel user = (UserModel) auth.getPrincipal();
+        var token = tokenService.generateToken(user);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+        Map<String, Object> userResponse = new HashMap<>();
+        userResponse.put("name", user.getName());
+        userResponse.put("email", user.getUsername());
+        userResponse.put("phone", user.getTelephone());
+        userResponse.put("groups", user.getGroups());
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("user", userResponse);
+        responseData.put("token", token);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity test(){
-        return ResponseEntity.ok().build();
+    @PostMapping("/validate")
+    public ResponseEntity validate(HttpServletRequest request) {
+        UserModel user = (UserModel) request.getAttribute("userData");
+
+
+        Map<String, Object> userResponse = new HashMap<>();
+        userResponse.put("name", user.getName());
+        userResponse.put("email", user.getUsername());
+        userResponse.put("phone", user.getTelephone());
+        userResponse.put("groups", user.getGroups());
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("user", userResponse);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 }
