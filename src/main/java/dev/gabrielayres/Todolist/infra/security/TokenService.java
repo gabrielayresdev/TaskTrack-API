@@ -20,13 +20,13 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String generateToken(UserModel user) {
+    public String generateToken(UserModel user, boolean remember) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getUsername())
-                    .withExpiresAt(genExpirationDate())
+                    .withExpiresAt(genExpirationDate(remember))
                     .sign(algorithm);
             return token;
         }   catch(JWTCreationException exception) {
@@ -47,7 +47,7 @@ public class TokenService {
         }
     }
 
-    private Instant genExpirationDate() {
-        return LocalDateTime.now().plusHours(168).toInstant(ZoneOffset.of("-03:00"));
+    private Instant genExpirationDate(boolean remember) {
+        return LocalDateTime.now().plusHours(remember ? 168 : 3).toInstant(ZoneOffset.of("-03:00"));
     }
 }

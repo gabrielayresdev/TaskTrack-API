@@ -52,7 +52,7 @@ public class AuthorizationController {
 
         var auth  = this.authenticationManager.authenticate(usernamePassword);
         UserModel user = (UserModel) auth.getPrincipal();
-        var token = tokenService.generateToken(user);
+        var token = tokenService.generateToken(user, data.remember());
 
         Map<String, Object> userResponse = new HashMap<>();
         userResponse.put("name", user.getName());
