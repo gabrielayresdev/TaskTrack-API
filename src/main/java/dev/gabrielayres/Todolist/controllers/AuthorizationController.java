@@ -33,7 +33,7 @@ public class AuthorizationController {
 
     @PostMapping("/register")
     public ResponseEntity create(@RequestBody RegisterDTO data) {
-        if(this.repository.findByUsername(data.name()) != null) {
+        if(this.repository.findByUsername(data.username()) != null) {
             System.out.println("Email already in use");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already in use!");
         }
@@ -43,28 +43,32 @@ public class AuthorizationController {
         UserModel newUser = new UserModel(data.username(), data.name(), encryptedPassword, data.telephone(), data.groups(), data.role());
 
         var userCreated = this.repository.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
+        return ResponseEntity.status(HttpStatus.OK).body(userCreated);
     }
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
 
-        var auth  = this.authenticationManager.authenticate(usernamePassword);
-        UserModel user = (UserModel) auth.getPrincipal();
-        var token = tokenService.generateToken(user, data.remember());
+        try {
+            var auth  = this.authenticationManager.authenticate(usernamePassword);
+            UserModel user = (UserModel) auth.getPrincipal();
+            var token = tokenService.generateToken(user, data.remember());
 
-        Map<String, Object> userResponse = new HashMap<>();
-        userResponse.put("name", user.getName());
-        userResponse.put("email", user.getUsername());
-        userResponse.put("phone", user.getTelephone());
-        userResponse.put("groups", user.getGroups());
+            Map<String, Object> userResponse = new HashMap<>();
+            userResponse.put("name", user.getName());
+            userResponse.put("email", user.getUsername());
+            userResponse.put("phone", user.getTelephone());
+            userResponse.put("groups", user.getGroups());
 
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("user", userResponse);
-        responseData.put("token", token);
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("user", userResponse);
+            responseData.put("token", token);
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseData);
+            return ResponseEntity.status(HttpStatus.OK).body(responseData);
+        } catch (AuthenticationException err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email or password invalid!");
+        }
     }
 
     @PostMapping("/validate")
