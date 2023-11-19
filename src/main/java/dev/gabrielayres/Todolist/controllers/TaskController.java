@@ -2,6 +2,7 @@ package dev.gabrielayres.Todolist.controllers;
 
 import dev.gabrielayres.Todolist.tasks.TaskModel;
 import dev.gabrielayres.Todolist.tasks.TaskRepository;
+import dev.gabrielayres.Todolist.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class TaskController {
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
 
 
+        System.out.println(taskModel);
+
         UUID userId = (UUID) request.getAttribute("userId");
         taskModel.setUserId(userId);
 
@@ -41,6 +44,29 @@ public class TaskController {
         UUID userId = (UUID) request.getAttribute("userId");
         List<TaskModel> tasks = repository.findByUserId(userId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(tasks);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
+        var task = this.repository.findById(id).orElse(null);
+
+        if(task == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task not found");
+        }
+
+        var userId = request.getAttribute("userId");
+        if(!task.getUserId().equals(userId))  {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not allowed to update this task");
+
+        }
+
+        Utils.copyNonNullProperties(taskModel, task);
+
+        this.repository.save(task);
+
+        var taskUpdated = this.repository.save(task);
+        return ResponseEntity.ok().body(taskUpdated);
     }
 
     @DeleteMapping("/remove/{id}")
